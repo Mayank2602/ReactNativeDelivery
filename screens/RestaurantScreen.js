@@ -1,15 +1,19 @@
 import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native'
-import React, { useLayoutEffect } from 'react'
+import React, { useEffect, useLayoutEffect } from 'react'
 import { useNavigation, useRoute } from '@react-navigation/native'
 import { urlFor } from '../sanity'
 import { ArrowLeftIcon, StarIcon } from 'react-native-heroicons/solid'
 import { ChevronRightIcon, MapPinIcon, QuestionMarkCircleIcon } from 'react-native-heroicons/outline'
 import DishRow from '../components/DishRow'
+import BasketIcon from '../components/BasketIcon'
+import { useDispatch } from 'react-redux'
+import { setRestaurant } from '../features/restaurantSlice'
 
 
 
 const RestaurantScreen = () => {
-    const navigation =useNavigation()
+    const navigation =useNavigation();
+    const dispatch= useDispatch();
     const {params:{
         id,
         imgUrl,
@@ -23,12 +27,28 @@ const RestaurantScreen = () => {
         lat,
     }} = useRoute();
   
+    useEffect(()=>{
+        dispatch(setRestaurant({
+            id,
+            imgUrl,
+            title,
+            rating,
+            genre,
+            address,
+            short_description,
+            dishes,
+            long,
+            lat,
+        }))
+    },[dispatch])
     useLayoutEffect(()=>{
         navigation.setOptions({
             headerShown:false
         })
     })
   return (
+    <>
+    <BasketIcon/>
     <ScrollView>
       <View className='relative'>
         <Image 
@@ -63,7 +83,7 @@ const RestaurantScreen = () => {
                 <Text className="font-bold text-md pl-2 flex-1 ">Food Allergies?</Text>
                 <ChevronRightIcon color="#00BBCC"/>
             </TouchableOpacity>
-            <View>
+            <View className='pb-36'>
                 <Text className="text-lg font-bold px-4 pt-6">Menu</Text>
                 
                 {dishes?.map(dish=>(
@@ -79,6 +99,7 @@ const RestaurantScreen = () => {
             </View>
       </View>
     </ScrollView>
+    </>
   )
 }
 
